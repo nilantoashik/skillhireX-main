@@ -1,0 +1,7 @@
+- [x] Update backend/models/Interview.js to add AI bot fields (aiEnabled, aiQuestions, aiFeedback)
+- [x] Update backend/routes/interviewRoutes.js to handle AI question generation and response analysis using Apriora AI
+- [x] Create src/components/AIInterviewBot.jsx component for the AI bot interface
+- [x] Update src/components/InterviewsContentRecruiter.jsx to include AI bot toggle
+- [x] Update src/components/InterviewsContentCandidate.jsx to include AI bot option
+- [ ] Install Apriora AI SDK or relevant dependencies
+- [ ] Test the AI bot functionality
