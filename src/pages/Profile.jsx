@@ -15,40 +15,91 @@ import InterviewsContentRecruiter from '../components/InterviewsContentRecruiter
 import InterviewsContentCandidate from '../components/InterviewsContentCandidate';
 
 export default function Profile() {
-  // Mock auth data for demo
-  const authUser = {
-    name: "Sarah Chen",
-    email: "sarah.chen@email.com",
-    role: "candidate",
-    avatar: "SC",
-    profilePicture: "",
-    githubLink: "",
-    linkedinLink: "",
-    twitterLink: "",
-    bio: "Passionate full-stack developer with a love for creating beautiful, functional web experiences.",
-    location: "San Francisco, CA",
-    phone: "+1 (555) 123-4567",
-    skills: ["React", "TypeScript", "Node.js", "Python", "AWS", "GraphQL"],
-    experience: "4 years"
-  };
+  const { user: authUser, updateUser } = useAuth();
 
   const [user, setUser] = useState({
-    name: authUser?.name || "Sarah Chen",
-    email: authUser?.email || "sarah.chen@email.com",
+    name: authUser?.name || "",
+    email: authUser?.email || "",
     role: authUser?.role || "candidate",
-    avatar: authUser?.avatar || authUser?.name?.charAt(0) || "SC",
+    avatar: authUser?.avatar || authUser?.name?.charAt(0) || "",
     profilePicture: authUser?.profilePicture || "",
     githubLink: authUser?.githubLink || "",
     linkedinLink: authUser?.linkedinLink || "",
     twitterLink: authUser?.twitterLink || "",
-    bio: authUser?.bio || "Passionate full-stack developer with a love for creating beautiful, functional web experiences.",
-    location: authUser?.location || "San Francisco, CA",
-    phone: authUser?.phone || "+1 (555) 123-4567",
-    skills: authUser?.skills || ["React", "TypeScript", "Node.js", "Python", "AWS", "GraphQL"],
-    experience: authUser?.experience || "4 years",
+    bio: authUser?.bio || "",
+    location: authUser?.location || "",
+    phone: authUser?.phone || "",
+    skills: authUser?.skills || [],
+    experience: authUser?.experience || "",
     resume: authUser?.resume || "",
-    joinDate: "2024-01-15"
+    joinDate: authUser?.createdAt ? new Date(authUser.createdAt).toISOString().split('T')[0] : ""
   });
+
+  // Fetch latest profile data from backend on component mount
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (authUser) {
+        try {
+          const token = localStorage.getItem('token');
+          const response = await fetch('http://localhost:5000/api/users/profile', {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+
+          if (response.ok) {
+            const profileData = await response.json();
+            const updatedUser = {
+              name: profileData.name || "",
+              email: profileData.email || "",
+              role: profileData.role || "candidate",
+              avatar: profileData.name?.charAt(0) || "",
+              profilePicture: profileData.profilePicture || "",
+              githubLink: profileData.githubLink || "",
+              linkedinLink: profileData.linkedinLink || "",
+              twitterLink: profileData.twitterLink || "",
+              bio: profileData.bio || "",
+              location: profileData.location || "",
+              phone: profileData.phone || "",
+              skills: profileData.skills || [],
+              experience: profileData.experience || "",
+              resume: profileData.resume || "",
+              joinDate: profileData.createdAt ? new Date(profileData.createdAt).toISOString().split('T')[0] : ""
+            };
+            setUser(updatedUser);
+            updateUser(updatedUser); // Update AuthContext as well
+          }
+        } catch (error) {
+          console.error('Error fetching profile data:', error);
+        }
+      }
+    };
+
+    fetchProfileData();
+  }, [authUser, updateUser]);
+
+  // Sync user state with authUser when it changes
+  useEffect(() => {
+    if (authUser) {
+      setUser({
+        name: authUser.name || "",
+        email: authUser.email || "",
+        role: authUser.role || "candidate",
+        avatar: authUser.avatar || authUser.name?.charAt(0) || "",
+        profilePicture: authUser.profilePicture || "",
+        githubLink: authUser.githubLink || "",
+        linkedinLink: authUser.linkedinLink || "",
+        twitterLink: authUser.twitterLink || "",
+        bio: authUser.bio || "",
+        location: authUser.location || "",
+        phone: authUser.phone || "",
+        skills: authUser.skills || [],
+        experience: authUser.experience || "",
+        resume: authUser.resume || "",
+        joinDate: authUser.createdAt ? new Date(authUser.createdAt).toISOString().split('T')[0] : ""
+      });
+    }
+  }, [authUser]);
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState(user);
@@ -58,6 +109,56 @@ export default function Profile() {
   const [message, setMessage] = useState({ type: '', text: '' });
   const [newSkill, setNewSkill] = useState('');
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [showJobPostingForm, setShowJobPostingForm] = useState(false);
+  const [jobPostingData, setJobPostingData] = useState({
+    title: '',
+    company: '',
+    location: '',
+    type: 'full-time',
+    salary: '',
+    description: '',
+    requirements: '',
+    benefits: '',
+    applicationDeadline: ''
+  });
+
+  const handlePostJob = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/jobs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(jobPostingData),
+      });
+
+      if (response.ok) {
+        const newJob = await response.json();
+        console.log('Job posted successfully:', newJob);
+        setShowJobPostingForm(false);
+        setJobPostingData({
+          title: '',
+          company: '',
+          location: '',
+          type: 'full-time',
+          salary: '',
+          description: '',
+          requirements: '',
+          benefits: '',
+          applicationDeadline: ''
+        });
+        // Optionally refresh job listings or show success message
+      } else {
+        console.error('Failed to post job');
+        // Handle error (show error message to user)
+      }
+    } catch (error) {
+      console.error('Error posting job:', error);
+      // Handle error (show error message to user)
+    }
+  };
 
   // Mock data for recruiter dashboard
   const recruiterStats = {
@@ -375,7 +476,11 @@ export default function Profile() {
             gradient: "from-purple-500 to-violet-500"
           }
         ].map((action, index) => (
-          <button key={index} className="group bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-xl hover:border-gray-200 transition-all duration-300 text-left">
+          <button
+            key={index}
+            onClick={() => action.title === "Post New Job" ? setShowJobPostingForm(true) : null}
+            className="group bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-xl hover:border-gray-200 transition-all duration-300 text-left"
+          >
             <div className={`w-16 h-16 bg-gradient-to-br ${action.gradient} rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
               <action.icon className="w-8 h-8 text-white" />
             </div>

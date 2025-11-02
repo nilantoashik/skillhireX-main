@@ -51,6 +51,16 @@ router.post('/login', async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        profilePicture: user.profilePicture,
+        githubLink: user.githubLink,
+        linkedinLink: user.linkedinLink,
+        twitterLink: user.twitterLink,
+        bio: user.bio,
+        location: user.location,
+        phone: user.phone,
+        skills: user.skills,
+        experience: user.experience,
+        resume: user.resume,
         token,
       });
     } else {

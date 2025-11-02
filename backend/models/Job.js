@@ -8,6 +8,9 @@ const jobSchema = new mongoose.Schema({
   requirements: [String],
   salary: { type: String },
   type: { type: String, enum: ['full-time', 'part-time', 'contract', 'freelance'], default: 'full-time' },
+  benefits: [String],
+  applicationDeadline: { type: Date },
+  status: { type: String, enum: ['active', 'inactive', 'expired'], default: 'active' },
   postedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   applications: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Application' }],
 }, { timestamps: true });

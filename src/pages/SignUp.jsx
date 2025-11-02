@@ -12,7 +12,8 @@ export default function SignUp() {
     name: "",
     email: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
+    role: "candidate"
   });
   const [isLoading, setIsLoading] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
@@ -42,7 +43,8 @@ export default function SignUp() {
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          password: formData.password
+          password: formData.password,
+          role: formData.role
         }),
       });
 
@@ -254,8 +256,8 @@ export default function SignUp() {
                 onChange={handleInputChange}
                 placeholder="Confirm Password"
                 className={`w-full bg-white bg-opacity-10 border ${
-                  formData.confirmPassword && !passwordsMatch 
-                    ? 'border-red-400 focus:ring-red-400' 
+                  formData.confirmPassword && !passwordsMatch
+                    ? 'border-red-400 focus:ring-red-400'
                     : 'border-white border-opacity-20 focus:ring-emerald-400'
                 } rounded-2xl pl-12 pr-12 py-4 text-white placeholder-emerald-200 focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-300 backdrop-blur-sm hover:bg-opacity-20`}
                 required
@@ -267,6 +269,43 @@ export default function SignUp() {
               >
                 {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
+            </div>
+
+            {/* Role selection */}
+            <div className="space-y-3">
+              <label className="block text-sm font-medium text-emerald-200">Account Type</label>
+              <div className="grid grid-cols-2 gap-3">
+                <label className={`flex items-center justify-center p-3 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
+                  formData.role === 'candidate'
+                    ? 'border-emerald-400 bg-emerald-400 bg-opacity-20 text-emerald-100'
+                    : 'border-white border-opacity-20 bg-white bg-opacity-10 text-emerald-200 hover:bg-opacity-20'
+                }`}>
+                  <input
+                    type="radio"
+                    name="role"
+                    value="candidate"
+                    checked={formData.role === 'candidate'}
+                    onChange={handleInputChange}
+                    className="sr-only"
+                  />
+                  <span className="text-sm font-medium">Job Seeker</span>
+                </label>
+                <label className={`flex items-center justify-center p-3 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
+                  formData.role === 'recruiter'
+                    ? 'border-emerald-400 bg-emerald-400 bg-opacity-20 text-emerald-100'
+                    : 'border-white border-opacity-20 bg-white bg-opacity-10 text-emerald-200 hover:bg-opacity-20'
+                }`}>
+                  <input
+                    type="radio"
+                    name="role"
+                    value="recruiter"
+                    checked={formData.role === 'recruiter'}
+                    onChange={handleInputChange}
+                    className="sr-only"
+                  />
+                  <span className="text-sm font-medium">Recruiter</span>
+                </label>
+              </div>
             </div>
 
             {/* Password match indicator */}

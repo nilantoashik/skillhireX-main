@@ -30,7 +30,7 @@ export default function SignIn() {
       if (response.ok) {
         const data = await response.json();
 
-        // Use actual user data from API
+        // Use actual user data from API with all profile fields
         const userData = {
           id: data._id,
           name: data.name,
@@ -38,7 +38,16 @@ export default function SignIn() {
           role: data.role || 'candidate',
           avatar: data.name.charAt(0),
           githubLink: data.githubLink || '',
-          profilePicture: data.profilePicture || ''
+          linkedinLink: data.linkedinLink || '',
+          twitterLink: data.twitterLink || '',
+          profilePicture: data.profilePicture || '',
+          phone: data.phone || '',
+          location: data.location || '',
+          bio: data.bio || '',
+          skills: data.skills || [],
+          experience: data.experience || '',
+          resume: data.resume || '',
+          createdAt: data.createdAt
         };
 
         login(userData, data.token);
